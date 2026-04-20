@@ -6,4 +6,4 @@ visualizes their abstract syntax tree, and evaluates the result.
 Semester project — UNIZA FRI, 2026.
 
 ## Status
-Added langauge specifications.
+Lexer done. Demo in proggress.

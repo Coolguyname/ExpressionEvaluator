@@ -142,4 +142,89 @@ public class LexerTests
         Assert.Equal(TokenKind.Identifier, tokens[0].Kind);
         Assert.Equal("trueValue", tokens[0].Lexeme);
     }
+
+    [Fact]
+    public void Tokenize_SingleCharOperators_AllMapToCorrectKind()
+    {
+        var lexer = new Lexer("+-*/%^(),");
+        var tokens = lexer.Tokenize();
+
+        var expected = new[]
+        {
+        TokenKind.Plus, TokenKind.Minus, TokenKind.Star, TokenKind.Slash,
+        TokenKind.Percent, TokenKind.Caret, TokenKind.LParen, TokenKind.RParen,
+        TokenKind.Comma, TokenKind.Eof
+        };
+
+        Assert.Equal(expected.Length, tokens.Count);
+        for (int i = 0; i < expected.Length; i++)
+        {
+            Assert.Equal(expected[i], tokens[i].Kind);
+        }
+    }
+
+    [Fact]
+    public void Tokenize_LessThan_ReturnsLtToken()
+    {
+        var lexer = new Lexer("<");
+        var tokens = lexer.Tokenize();
+
+        Assert.Equal(TokenKind.Lt, tokens[0].Kind);
+        Assert.Equal("<", tokens[0].Lexeme);
+    }
+
+    [Fact]
+    public void Tokenize_LessOrEqual_ReturnsLtEqToken()
+    {
+        var lexer = new Lexer("<=");
+        var tokens = lexer.Tokenize();
+
+        Assert.Equal(TokenKind.LtEq, tokens[0].Kind);
+        Assert.Equal("<=", tokens[0].Lexeme);
+        Assert.Equal(0, tokens[0].Position);
+    }
+
+    [Fact]
+    public void Tokenize_EqualEqual_ReturnsEqEqToken()
+    {
+        var lexer = new Lexer("==");
+        var tokens = lexer.Tokenize();
+
+        Assert.Equal(TokenKind.EqEq, tokens[0].Kind);
+        Assert.Equal("==", tokens[0].Lexeme);
+    }
+
+    [Fact]
+    public void Tokenize_SingleEquals_ThrowsLexerException()
+    {
+        var lexer = new Lexer("=");
+
+        var ex = Assert.Throws<LexerException>(() => lexer.Tokenize());
+        Assert.Contains("==", ex.Message);
+    }
+
+    [Fact]
+    public void Tokenize_ComplexExpression_ProducesCorrectTokens()
+    {
+        var lexer = new Lexer("x >= 10 AND x <= 50");
+        var tokens = lexer.Tokenize();
+
+        var expected = new[]
+        {
+        TokenKind.Identifier,
+        TokenKind.GtEq,
+        TokenKind.Number,
+        TokenKind.And,
+        TokenKind.Identifier,
+        TokenKind.LtEq,
+        TokenKind.Number,
+        TokenKind.Eof
+        };
+
+        Assert.Equal(expected.Length, tokens.Count);
+        for (int i = 0; i < expected.Length; i++)
+        {
+            Assert.Equal(expected[i], tokens[i].Kind);
+        }
+    }
 }

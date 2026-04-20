@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Text;
 
 namespace ExpressionEvaluator.Core.Lexing;
 
@@ -21,24 +19,51 @@ public sealed class Lexer
     {
         var tokens = new List<Token>();
 
-        while(!IsAtEnd())
+        while (!IsAtEnd())
         {
             SkipWhiteSpace();
             if (IsAtEnd()) break;
 
             char c = Peek();
-            if (char.IsDigit(c))
+            if (char.IsDigit(c)) { tokens.Add(ReadNumber()); continue; }
+            if (char.IsLetter(c) || c == '_') { tokens.Add(ReadIdentifier()); continue; }
+
+            switch (c)
             {
-                tokens.Add(ReadNumber());
-                continue;
-            } 
-            else if (char.IsLetter(c) || c == '_')
-            {
-                tokens.Add(ReadIdentifier());
-                continue;
+                case '+': tokens.Add(SingleCharToken(TokenKind.Plus)); continue;
+                case '-': tokens.Add(SingleCharToken(TokenKind.Minus)); continue;
+                case '*': tokens.Add(SingleCharToken(TokenKind.Star)); continue;
+                case '/': tokens.Add(SingleCharToken(TokenKind.Slash)); continue;
+                case '%': tokens.Add(SingleCharToken(TokenKind.Percent)); continue;
+                case '^': tokens.Add(SingleCharToken(TokenKind.Caret)); continue;
+                case '(': tokens.Add(SingleCharToken(TokenKind.LParen)); continue;
+                case ')': tokens.Add(SingleCharToken(TokenKind.RParen)); continue;
+                case ',': tokens.Add(SingleCharToken(TokenKind.Comma)); continue;
+                case '<':
+                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.LtEq)); }
+                    else { tokens.Add(SingleCharToken(TokenKind.Lt)); }
+                    continue;
+                case '>':
+                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.GtEq)); }
+                    else { tokens.Add(SingleCharToken(TokenKind.Gt)); }
+                    continue;
+                case '!':
+                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.NotEq)); }
+                    else { tokens.Add(SingleCharToken(TokenKind.Bang)); }
+                    continue;
+                case '=':
+                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.EqEq)); continue;  }
+                    throw new LexerException($"Unexpected character '='. Did you mean '=='? Position: {_pos}.");
+                case '&':
+                    if (PeekNext() == '&') { tokens.Add(TwoCharToken(TokenKind.AndAnd)); continue; }
+                    throw new LexerException($"Unexpected character '&'. Did you mean '&&'? Position: {_pos}.");
+                case '|':
+                    if (PeekNext() == '|') { tokens.Add(TwoCharToken(TokenKind.OrOr)); continue; }
+                    throw new LexerException($"Unexpected character '|'. Did you mean '||'? Position: {_pos}.");
+                default:
+                    throw new LexerException($"Unexpected character '{c}' at position {_pos}.");
             }
 
-            throw new LexerException($"Unexpected character '{Peek()}' at position {_pos}.");
         }
 
         tokens.Add(new Token(TokenKind.Eof, "", _pos));
@@ -54,7 +79,7 @@ public sealed class Lexer
             Advance();
         }
 
-        if (!IsAtEnd() && Peek() == '.') 
+        if (!IsAtEnd() && Peek() == '.')
         {
             if (char.IsDigit(PeekNext()))
             {
@@ -64,7 +89,7 @@ public sealed class Lexer
                 {
                     Advance();
                 }
-            } 
+            }
             else
             {
                 throw new LexerException($"Invalid number: missing digits after decimal point at position {_pos}.");
@@ -89,17 +114,29 @@ public sealed class Lexer
         return new Token(GetKeyWordKind(lexeme), lexeme, start);
     }
 
-    private TokenKind GetKeyWordKind(string lexeme)
+    private TokenKind GetKeyWordKind(string lexeme) => lexeme switch
     {
-        switch (lexeme.ToLower()) 
-        {
-            case "true": return TokenKind.True;
-            case "false": return TokenKind.False;
-            case "and": return TokenKind.And;
-            case "or": return TokenKind.Or;
-            case "not": return TokenKind.Not;
-        }
-        return TokenKind.Identifier;
+        "true" => TokenKind.True,
+        "false" => TokenKind.False,
+        "and" or "AND" => TokenKind.And,
+        "or" or "OR" => TokenKind.Or,
+        "not" or "NOT" => TokenKind.Not,
+        _ => TokenKind.Identifier,
+    };
+
+    private Token SingleCharToken(TokenKind kind) 
+    {
+        int start = _pos;
+        Advance();
+        return new Token(kind, _source[start.._pos], start);
+    }
+
+    private Token TwoCharToken(TokenKind kind)
+    {
+        int start = _pos;
+        Advance();
+        Advance();
+        return new Token(kind, _source[start.._pos], start);
     }
 
     private bool IsAtEnd() => _pos >= _source.Length;
