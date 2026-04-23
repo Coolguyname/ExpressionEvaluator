@@ -13,7 +13,7 @@ public sealed class TokenizerViewModel : ViewModelBase
     private string _inputText = "";
     private string _errorMessage = "";
 
-    public string InputText { get { return _inputText; } set { SetField(ref _inputText, value); } }
+    public string InputText { get { return _inputText; } set { if (SetField(ref _inputText, value)) { Tokens.Clear(); ErrorMessage = ""; } } }
 
     public string ErrorMessage { get { return _errorMessage; } set { SetField(ref _errorMessage, value); } }
 

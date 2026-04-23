@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:ExpressionEvaluator.ViewModels"
         xmlns:local="clr-namespace:ExpressionEvaluator"
         mc:Ignorable="d"
-        Title="Expression Evaluator Lexer Demo" Height="700" Width="500">
+        Title="Expression Evaluator Lexer Demo" Height="500" Width="500">
 
     <Window.DataContext>
         <vm:TokenizerViewModel />
@@ -21,6 +21,37 @@
 
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="Expression: " Margin="0,0,0,4" />
+            <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                     FontFamily="Sans Serif Collection" FontSize="14"
+                     Padding="6"
+                     AcceptsReturn="False"/>
+            <Button Content="Tokenize"
+                    Command="{Binding TokenizeCommand}"
+                    IsDefault="True"
+                    HorizontalAlignment="Right"
+                    Padding="12"
+                    Margin="0,8,0,0"/>
         </StackPanel>
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Tokens}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  FontFamily="Sans Serif Collection">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding Position}" Width="60" />
+                <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="120"/>
+                <DataGridTextColumn Header="Lexeme" Binding="{Binding Lexeme}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="2"
+                   Text="{Binding ErrorMessage}"
+                   Foreground="Red"
+                   FontWeight="Bold"
+                   Margin="0,12,0,0"
+                   TextWrapping="Wrap"/>
     </Grid>
 </Window>
