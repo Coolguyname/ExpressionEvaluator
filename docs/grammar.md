@@ -367,14 +367,48 @@ zhora nadol).
 unary = [ "-" ] , primary ;
 ```
 
-**Umiestnenie medzi `power` a `primary` je zámerné.** Spôsobuje, že:
+**Umiestnenie pravidla `unary` medzi `power` a `primary` je zámerné.**
+Spôsobuje, že unárny mínus má **vyššiu prioritu ako `^`**:
 
-- `-2 ^ 2` sa parsuje ako `-(2^2)` = `-4`
-- Nie ako `(-2)^2` = `4`
+- `-2 ^ 2` sa parsuje ako `(-2) ^ 2` = `4`
+- Nie ako `-(2^2)` = `-4`
 
-Toto zodpovedá Pythonu a väčšine kalkulačiek. Wolfram Alpha to interpretuje
-opačne. **Je to dizajnové rozhodnutie — dokumentujeme ho, aby používateľ vedel,
-čo očakávať.**
+#### Prečo to tak vychádza
+
+Vyplýva to priamo zo štruktúry pravidiel. Keď parser vidí `-2 ^ 2`:
+
+1. `power` zavolá `unary` pre svoj ľavý operand.
+2. `unary` zachytí `-` a spasruje `-2` ako `UnaryOp(Negate, 2)`.
+3. `power` má ľavý operand hotový, vidí `^`, spasruje pravý operand `2`.
+4. Výsledok: `BinaryOp(Power, UnaryOp(Negate, 2), 2)` → vyhodnotí sa ako
+   `(-2)^2 = 4`.
+
+Mínus teda "zrastie" so svojím operandom **skôr**, než ten operand vstúpi do
+mocniny.
+
+#### Ako to robia iné jazyky
+
+Tento jazyk dodržiava konvenciu C-rodiny. Pre porovnanie:
+
+| Jazyk           | Výraz       | Výsledok | Interpretácia      |
+|-----------------|-------------|----------|--------------------|
+| **Tento jazyk** | `-2 ^ 2`    | `4`      | `(-2)^2`           |
+| C# `Math.Pow`   | `Math.Pow(-2, 2)` | `4`| `(-2)^2`           |
+| Python          | `-2 ** 2`   | `-4`     | `-(2**2)`          |
+| Wolfram Alpha   | `-2 ^ 2`    | `-4`     | `-(2^2)`           |
+
+Python a matematická notácia volia opačnú konvenciu — mocnina viaže silnejšie
+než unárny mínus.
+
+#### Prečo sme zvolili C-konvenciu
+
+Inverzná konvencia by si vyžadovala asymetrickú gramatiku (`unary` pre ľavý
+operand `^`, `power` pre pravý), čo komplikuje pravidlá aj implementáciu.
+C-konvencia je priamym dôsledkom prirodzeného poradia úrovní priorít.
+
+**Je to vedomé dizajnové rozhodnutie — dokumentujeme ho, aby používateľ
+vedel, čo očakávať.** Ak používateľ chce matematickú konvenciu, môže explicitne
+zazátvorkovať: `-(2^2)`.
 
 ### 5.10 Úroveň 9: Primárne výrazy
 
@@ -433,7 +467,7 @@ Prehľad od **najnižšej po najvyššiu** prioritu:
 | 5      | `+`, `-`           | ľavá          | `1 - 2 - 3` → `(1 - 2) - 3`    |
 | 6      | `*`, `/`, `%`      | ľavá          | `12 / 3 / 2` → `(12 / 3) / 2`  |
 | 7      | `^`                | **pravá**     | `2^3^2` → `2^(3^2) = 512`       |
-| 8      | unárne `-`         | unárny        | `-2^2` → `-(2^2) = -4`          |
+| 8      | unárne `-`         | unárny        | `-2^2` → `(-2)^2 = 4`          |
 | 9      | `()`, literály, volania | —        | —                              |
 
 ### Mentálny model: "Nižšie v tabuľke = silnejšia väzba"
