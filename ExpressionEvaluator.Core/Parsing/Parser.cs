@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
+﻿using System.Globalization;
 using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing.Ast;
-using System.ComponentModel.DataAnnotations;
 
 namespace ExpressionEvaluator.Core.Parsing;
 
@@ -39,19 +35,6 @@ public sealed class Parser
         return true;
     }
 
-    private bool Match(params TokenKind[] kinds)
-    {
-        foreach (var kind in kinds)
-        {
-            if (Check(kind))
-            {
-                Advance();
-                return true;
-            }
-        }
-        return false;
-    }
-
     private Token Expect(TokenKind kind, string what)
     {
         if (Check(kind)) return Advance();
@@ -60,7 +43,15 @@ public sealed class Parser
 
     private bool IsAtEnd() => Peek().Kind == TokenKind.Eof;
 
-    private Expression ParseExpression() => throw new NotImplementedException();
+    public Expression Parse()
+    {
+        var expression = ParseExpression();
+
+        Expect(TokenKind.Eof, "end of expression");
+        return expression;
+    }
+
+    private Expression ParseExpression() => ParseOr();
 
     private Expression ParseUnary()
     {
@@ -158,6 +149,77 @@ public sealed class Parser
             var right = ParsePower();
             var op = TokenToBinaryOperator(opToken.Kind);
             left = new BinaryOp(op, left, right, opToken.Position);
+        }
+
+        return left;
+    }
+
+    private Expression ParseAdditive()
+    {
+        var left = ParseMultiplicative();
+
+        while (Check(TokenKind.Plus) || Check(TokenKind.Minus))
+        {
+            var opToken = Advance();
+            var right = ParseMultiplicative();
+            var op = TokenToBinaryOperator(opToken.Kind);
+            left = new BinaryOp(op, left, right, opToken.Position);
+        }
+
+        return left;
+    }
+
+    private Expression ParseComparison()
+    {
+        var left = ParseAdditive();
+
+        if (Check(TokenKind.EqEq) || Check(TokenKind.NotEq) ||
+            Check(TokenKind.Lt) || Check(TokenKind.LtEq) ||
+            Check(TokenKind.Gt) || Check(TokenKind.GtEq)) 
+        {
+            var opToken = Advance();
+            var right = ParseAdditive();
+            var op = TokenToBinaryOperator(opToken.Kind);
+            return new BinaryOp(op, left, right, opToken.Position);
+        }
+
+        return left;
+    }
+
+    private Expression ParseNot()
+    {
+        if (Check(TokenKind.Not) || Check(TokenKind.Bang))
+        {
+            var notToken = Advance();
+            var operand = ParseComparison();
+            return new UnaryOp(UnaryOperator.Not, operand, notToken.Position);
+        }
+        return ParseComparison();
+    }
+
+    private Expression ParseAnd()
+    {
+        var left = ParseNot();
+
+        while (Check(TokenKind.And) || Check(TokenKind.AndAnd))
+        {
+            var opToken = Advance();
+            var right = ParseNot();
+            left = new BinaryOp(BinaryOperator.And, left, right, opToken.Position);
+        }
+
+        return left;
+    }
+
+    private Expression ParseOr()
+    {
+        var left = ParseAnd();
+
+        while (Check(TokenKind.Or) || Check(TokenKind.OrOr))
+        {
+            var opToken = Advance();
+            var right = ParseAnd();
+            left = new BinaryOp(BinaryOperator.Or, left, right, opToken.Position);
         }
 
         return left;
