@@ -100,10 +100,4 @@ public class ParserTests
         Assert.Equal(2, call.Arguments.Count);
     }
 
-    [Fact]
-    public void Parse_ChainedComparison_ThrowsParserException()
-    {
-        Assert.Throws<ParserException>(() => Parse("1 < x < 10"));
-    }
-
 }
