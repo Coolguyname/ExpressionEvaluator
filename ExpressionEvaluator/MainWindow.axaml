@@ -1,9 +1,67 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="using:ExpressionEvaluator.ViewModels"
+        xmlns:lexing="using:ExpressionEvaluator.Core.Lexing"
         x:Class="ExpressionEvaluator.MainWindow"
-        Title="ExpressionEvaluator">
-    Welcome to Avalonia!
+        x:DataType="vm:EvaluatorViewModel"
+        Title="Expression Evaluator"
+        Width="700" Height="600">
+
+	<Window.DataContext>
+		<vm:EvaluatorViewModel />
+	</Window.DataContext>
+
+	<Grid Margin="12" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
+
+		<TextBlock Grid.Row="0" Text="Expression:" Margin="0,0,0,4" />
+		<TextBox Grid.Row="1"
+                 Text="{Binding ExpressionText}"
+                 FontFamily="Consolas,Menlo,monospace"
+                 FontSize="14"
+                 Padding="6"
+                 Margin="0,0,0,8" />
+
+		<TextBlock Grid.Row="2" Text="Variables (e.g. x = 5, y = 10):" Margin="0,0,0,4" />
+		<Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+			<TextBox Grid.Column="0"
+                     Text="{Binding VariablesText}"
+                     FontFamily="Consolas,Menlo,monospace"
+                     FontSize="14"
+                     Padding="6" />
+			<Button Grid.Column="1"
+                    Content="Evaluate"
+                    Command="{Binding EvaluateCommand}"
+                    IsDefault="True"
+                    Padding="16,6"
+                    Margin="8,0,0,0" />
+		</Grid>
+
+		<StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,0,4">
+			<TextBlock Text="Result: " FontWeight="Bold" />
+			<TextBlock Text="{Binding ResultText}"
+                       FontFamily="Consolas,Menlo,monospace"
+                       FontSize="14" />
+		</StackPanel>
+
+		<TextBlock Grid.Row="5"
+                   Text="{Binding ErrorText}"
+                   Foreground="IndianRed"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,8" />
+
+		<DataGrid Grid.Row="6"
+                  ItemsSource="{Binding Tokens}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  FontFamily="Consolas,Menlo,monospace">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="#" Binding="{Binding Position}" Width="60" />
+				<DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="120" />
+				<DataGridTextColumn Header="Lexeme" Binding="{Binding Lexeme}" Width="*" />
+			</DataGrid.Columns>
+		</DataGrid>
+
+	</Grid>
 </Window>
