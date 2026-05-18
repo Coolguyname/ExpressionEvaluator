@@ -7,6 +7,7 @@ using ExpressionEvaluator.Commands;
 using ExpressionEvaluator.Core.Evaluating;
 using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing;
+using ExpressionEvaluator.Core.Parsing.Ast;
 
 namespace ExpressionEvaluator.ViewModels;
 
@@ -18,6 +19,8 @@ public sealed class EvaluatorViewModel : ViewModelBase
     private string _errorText = "";
 
     public ObservableCollection<Token> Tokens { get; } = new();
+
+    public ObservableCollection<AstNodeViewModel> AstNodes { get; } = new();
 
     public ICommand EvaluateCommand { get; }
 
@@ -86,7 +89,7 @@ public sealed class EvaluatorViewModel : ViewModelBase
             Tokens.Add(token);
         }
 
-        Core.Parsing.Ast.Expression ast;
+        Expression ast;
         try
         {
             ast = new Parser(tokens).Parse();
@@ -96,6 +99,9 @@ public sealed class EvaluatorViewModel : ViewModelBase
             ErrorText = $"Parser error: {ex.Message}";
             return;
         }
+
+        AstNodes.Clear();
+        AstNodes.Add(AstNodeViewModel.FromExpression(ast));
 
         Variables variables;
         try
@@ -122,6 +128,7 @@ public sealed class EvaluatorViewModel : ViewModelBase
     private void ClearOutputs()
     {
         Tokens.Clear();
+        AstNodes.Clear();
         ResultText = "";
         ErrorText = "";
     }

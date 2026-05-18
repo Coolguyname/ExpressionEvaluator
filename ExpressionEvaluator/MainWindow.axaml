@@ -5,7 +5,7 @@
         x:Class="ExpressionEvaluator.MainWindow"
         x:DataType="vm:EvaluatorViewModel"
         Title="Expression Evaluator"
-        Width="700" Height="600">
+        Width="800" Height="600">
 
 	<Window.DataContext>
 		<vm:EvaluatorViewModel />
@@ -32,14 +32,17 @@
                     Content="Evaluate"
                     Command="{Binding EvaluateCommand}"
                     IsDefault="True"
-                    Padding="16,6"
-                    Margin="8,0,0,0" />
+                    Padding="20,8"
+                    Margin="8,0,0,0"
+					Background="#cc0000"
+					Foreground="White"
+					FontWeight="SemiBold"/>
 		</Grid>
 
 		<StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,0,4">
 			<TextBlock Text="Result: " FontWeight="Bold" />
 			<TextBlock Text="{Binding ResultText}"
-                       FontFamily="Consolas,Menlo,monospace"
+					   FontFamily="Consolas,Menlo,monospace"
                        FontSize="14" />
 		</StackPanel>
 
@@ -49,19 +52,49 @@
                    TextWrapping="Wrap"
                    Margin="0,0,0,8" />
 
-		<DataGrid Grid.Row="6"
-                  ItemsSource="{Binding Tokens}"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  HeadersVisibility="Column"
-                  GridLinesVisibility="Horizontal"
-                  FontFamily="Consolas,Menlo,monospace">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="#" Binding="{Binding Position}" Width="60" />
-				<DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="120" />
-				<DataGridTextColumn Header="Lexeme" Binding="{Binding Lexeme}" Width="*" />
-			</DataGrid.Columns>
-		</DataGrid>
+		<Grid Grid.Row="6" ColumnDefinitions="*,*">
+			<DataGrid Grid.Column="0"
+					  ItemsSource="{Binding Tokens}"
+					  AutoGenerateColumns="False"
+					  IsReadOnly="True"
+					  HeadersVisibility="Column"
+					  GridLinesVisibility="Horizontal"
+					  FontFamily="Consolas,Menlo,monospace">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="#" Binding="{Binding Position}" Width="60" />
+					<DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="100" />
+					<DataGridTextColumn Header="Lexeme" Binding="{Binding Lexeme}" Width="*" />
+				</DataGrid.Columns>
+			</DataGrid>
 
+			
+			<TreeView Grid.Column="1" 
+					  ItemsSource="{Binding AstNodes}"
+					  FontFamily="Consolas,Menlo,monospace"
+					  FontSize="14"
+					  Margin="8,0,0,0">
+
+				<TreeView.Styles>
+					<Style Selector="TreeViewItem">
+						<Setter Property="IsExpanded" Value="True"/>
+						<Setter Property="Padding" Value="4"/>
+					</Style>
+				</TreeView.Styles>
+				
+				<TreeView.ItemTemplate>
+					<TreeDataTemplate ItemsSource="{Binding Children}">
+						<Border Background="#F8F8F8"
+								CornerRadius="4"
+								BorderBrush="#E0E0E0"
+								BorderThickness="1"
+								Padding="6">
+							<TextBlock Text="{Binding Title}" VerticalAlignment="Center"/>
+						</Border>
+					</TreeDataTemplate>
+				</TreeView.ItemTemplate>
+				
+			</TreeView>
+		</Grid>
+		
 	</Grid>
 </Window>

@@ -171,7 +171,7 @@ public sealed class Evaluator
         };
     }
 
-    private static string OperatorSymbol(BinaryOperator op) => op switch
+    public static string OperatorSymbol(BinaryOperator op) => op switch
     {
         BinaryOperator.Add => "+",
         BinaryOperator.Subtract => "-",
