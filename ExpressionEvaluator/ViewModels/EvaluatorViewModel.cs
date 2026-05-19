@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Windows.Input;
 using ExpressionEvaluator.Commands;
 using ExpressionEvaluator.Core.Evaluating;
@@ -18,9 +17,9 @@ public sealed class EvaluatorViewModel : ViewModelBase
     private string _resultText = "";
     private string _errorText = "";
 
-    public ObservableCollection<Token> Tokens { get; } = new();
+    public ObservableCollection<Token> Tokens { get; } = [];
 
-    public ObservableCollection<AstNodeViewModel> AstNodes { get; } = new();
+    public ObservableCollection<AstNodeViewModel> AstNodes { get; } = [];
 
     public ICommand EvaluateCommand { get; }
 
@@ -96,7 +95,7 @@ public sealed class EvaluatorViewModel : ViewModelBase
         }
         catch (ParserException ex)
         {
-            ErrorText = $"Parser error: {ex.Message}";
+            ErrorText = $"Parser error: {ex.Message} (position {ex.Position})";
             return;
         }
 
@@ -106,9 +105,9 @@ public sealed class EvaluatorViewModel : ViewModelBase
         Variables variables;
         try
         {
-            variables = ParseVariables(VariablesText);
+            variables = VariablesParser.Parse(VariablesText);
         }
-        catch (FormatException ex)
+        catch (VariablesParseException ex)
         {
             ErrorText = $"Variables error: {ex.Message}";
             return;
@@ -117,7 +116,7 @@ public sealed class EvaluatorViewModel : ViewModelBase
         try
         {
             var value = new Evaluator().Evaluate(ast, variables);
-            ResultText = FormatValue(value);
+            ResultText = ValueFormatter.Format(value);
         }
         catch (EvaluatorException ex)
         {
@@ -132,53 +131,4 @@ public sealed class EvaluatorViewModel : ViewModelBase
         ResultText = "";
         ErrorText = "";
     }
-
-    private static Variables ParseVariables(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return Variables.Empty;
-        }
-
-        var dict = new Dictionary<string, Value>();
-        var pairs = text.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-        foreach (var pair in pairs)
-        {
-            var parts = pair.Split('=', 2, StringSplitOptions.TrimEntries);
-            if (parts.Length != 2)
-            {
-                throw new FormatException($"Invalid variable assignment: '{pair}'. Expected 'name = value'.");
-            }
-
-            var name = parts[0];
-            var rawValue = parts[1];
-
-            if (rawValue.Equals("true", StringComparison.OrdinalIgnoreCase))
-            {
-                dict[name] = new BooleanValue(true);
-            }
-            else if (rawValue.Equals("false", StringComparison.OrdinalIgnoreCase))
-            {
-                dict[name] = new BooleanValue(false);
-            }
-            else if (double.TryParse(rawValue, NumberStyles.Float, CultureInfo.InvariantCulture, out var number))
-            {
-                dict[name] = new NumberValue(number);
-            }
-            else
-            {
-                throw new FormatException($"Cannot parse value '{rawValue}' for variable '{name}'.");
-            }
-        }
-
-        return new Variables(dict);
-    }
-
-    private static string FormatValue(Value value) => value switch
-    {
-        NumberValue n => n.Number.ToString(CultureInfo.InvariantCulture),
-        BooleanValue b => b.Boolean ? "true" : "false",
-        _ => value.ToString() ?? ""
-    };
 }
