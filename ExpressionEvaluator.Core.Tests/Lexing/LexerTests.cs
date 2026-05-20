@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ExpressionEvaluator.Core.Lexing;
-using Xunit;
-using System.Text;
+﻿using ExpressionEvaluator.Core.Lexing;
 
 namespace ExpressionEvaluator.Core.Tests.Lexing;
 

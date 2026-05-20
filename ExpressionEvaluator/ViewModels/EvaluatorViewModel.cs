@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using ExpressionEvaluator.Commands;
+﻿using ExpressionEvaluator.Commands;
 using ExpressionEvaluator.Core.Evaluating;
 using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing;
 using ExpressionEvaluator.Core.Parsing.Ast;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace ExpressionEvaluator.ViewModels;
 

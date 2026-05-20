@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace ExpressionEvaluator.Core.Lexing;
 
-namespace ExpressionEvaluator.Core.Lexing;
 public enum TokenKind
 {
     Number, Identifier, True, False,

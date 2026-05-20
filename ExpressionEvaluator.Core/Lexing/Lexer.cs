@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-
-namespace ExpressionEvaluator.Core.Lexing;
+﻿namespace ExpressionEvaluator.Core.Lexing;
 
 public sealed class Lexer
 {
@@ -52,7 +48,7 @@ public sealed class Lexer
                     else { tokens.Add(SingleCharToken(TokenKind.Bang)); }
                     continue;
                 case '=':
-                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.EqEq)); continue;  }
+                    if (PeekNext() == '=') { tokens.Add(TwoCharToken(TokenKind.EqEq)); continue; }
                     throw new LexerException($"Unexpected character '='. Did you mean '=='? Position: {_pos}.");
                 case '&':
                     if (PeekNext() == '&') { tokens.Add(TwoCharToken(TokenKind.AndAnd)); continue; }
@@ -124,7 +120,7 @@ public sealed class Lexer
         _ => TokenKind.Identifier,
     };
 
-    private Token SingleCharToken(TokenKind kind) 
+    private Token SingleCharToken(TokenKind kind)
     {
         int start = _pos;
         Advance();

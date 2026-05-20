@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ExpressionEvaluator.Core.Parsing.Ast;
+﻿namespace ExpressionEvaluator.Core.Parsing.Ast;
 
 public sealed record NumberLiteral(double Value, int Position) : Expression(Position);
 

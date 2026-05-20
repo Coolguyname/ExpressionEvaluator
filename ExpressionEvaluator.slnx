@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>
+  <Project Path="ExpressionEvaluator.Cli/ExpressionEvaluator.Cli.csproj" />
   <Project Path="ExpressionEvaluator.Core.Tests/ExpressionEvaluator.Core.Tests.csproj" />
   <Project Path="ExpressionEvaluator.Core/ExpressionEvaluator.Core.csproj" />
   <Project Path="ExpressionEvaluator/ExpressionEvaluator.csproj" />

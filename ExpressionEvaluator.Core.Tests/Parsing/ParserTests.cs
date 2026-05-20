@@ -1,8 +1,6 @@
-﻿using ExpressionEvaluator.Core.Evaluating;
-using ExpressionEvaluator.Core.Lexing;
+﻿using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing;
 using ExpressionEvaluator.Core.Parsing.Ast;
-using Xunit;
 
 namespace ExpressionEvaluator.Core.Tests.Parsing;
 

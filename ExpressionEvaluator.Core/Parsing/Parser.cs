@@ -1,6 +1,6 @@
-﻿using System.Globalization;
-using ExpressionEvaluator.Core.Lexing;
+﻿using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing.Ast;
+using System.Globalization;
 
 namespace ExpressionEvaluator.Core.Parsing;
 
@@ -125,7 +125,7 @@ public sealed class Parser
         return new FunctionCall(nameToken.Lexeme, arguments, nameToken.Position);
     }
 
-    private Expression ParsePower() 
+    private Expression ParsePower()
     {
         var left = ParseUnary();
 
@@ -175,7 +175,7 @@ public sealed class Parser
 
         if (Check(TokenKind.EqEq) || Check(TokenKind.NotEq) ||
             Check(TokenKind.Lt) || Check(TokenKind.LtEq) ||
-            Check(TokenKind.Gt) || Check(TokenKind.GtEq)) 
+            Check(TokenKind.Gt) || Check(TokenKind.GtEq))
         {
             var opToken = Advance();
             var right = ParseAdditive();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace ExpressionEvaluator.Core.Evaluating;
 
@@ -8,8 +7,8 @@ public static class VariablesParser
     public static Value ParseValue(string text)
     {
         text = text.Trim();
-        if (text.Equals("true", StringComparison.OrdinalIgnoreCase)) return new BooleanValue(true); 
-        if (text.Equals("false", StringComparison.OrdinalIgnoreCase)) return new BooleanValue(false); 
+        if (text.Equals("true", StringComparison.OrdinalIgnoreCase)) return new BooleanValue(true);
+        if (text.Equals("false", StringComparison.OrdinalIgnoreCase)) return new BooleanValue(false);
         if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)) return new NumberValue(number);
         throw new VariablesParseException($"Cannot parse value '{text}'");
     }

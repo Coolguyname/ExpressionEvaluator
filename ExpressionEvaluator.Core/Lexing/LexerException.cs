@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace ExpressionEvaluator.Core.Lexing;
+﻿namespace ExpressionEvaluator.Core.Lexing;
 
 public sealed class LexerException : Exception
 {
-    public LexerException(string message) : base(message) {}
+    public LexerException(string message) : base(message) { }
 }
 

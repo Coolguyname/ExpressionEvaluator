@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ExpressionEvaluator.Core.Parsing.Ast;
-using System.Text;
-using System.Numerics;
-using System.Reflection.Emit;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
+﻿using ExpressionEvaluator.Core.Parsing.Ast;
 
 namespace ExpressionEvaluator.Core.Evaluating;
 
@@ -13,11 +6,11 @@ internal delegate Value BuiltinFunction(IReadOnlyList<Value> arguments, int posi
 
 public sealed class Evaluator
 {
-    private readonly IReadOnlyDictionary<string, BuiltinFunction> builtins;
+    private readonly IReadOnlyDictionary<string, BuiltinFunction> _builtins;
 
     public Evaluator()
     {
-        builtins = new Dictionary<string, BuiltinFunction>
+        _builtins = new Dictionary<string, BuiltinFunction>
         {
             ["sqrt"] = Sqrt,
             ["abs"] = Abs,
@@ -56,7 +49,7 @@ public sealed class Evaluator
             UnaryOperator.Not => operand switch
             {
                 BooleanValue b => new BooleanValue(!b.Boolean),
-                _ => throw new EvaluatorException($"Operator 'NOT' requires Boolean, go {operand.TypeName}",
+                _ => throw new EvaluatorException($"Operator 'NOT' requires Boolean, got {operand.TypeName}",
                 node.Position)
             },
             _ => throw new EvaluatorException($"Unknown unary operator: {node.Operator}",
@@ -166,7 +159,7 @@ public sealed class Evaluator
         {
             BinaryOperator.And => new BooleanValue(lb.Boolean && rb.Boolean),
             BinaryOperator.Or => new BooleanValue(lb.Boolean || rb.Boolean),
-            _ => throw new EvaluatorException($"Unexpected logical operator: {node.Operator}", 
+            _ => throw new EvaluatorException($"Unexpected logical operator: {node.Operator}",
                                               node.Position)
         };
     }
@@ -192,7 +185,7 @@ public sealed class Evaluator
 
     private Value EvaluateFunctionCall(FunctionCall node, Variables variables)
     {
-        if (!builtins.TryGetValue(node.Name, out var function))
+        if (!_builtins.TryGetValue(node.Name, out var function))
             throw new EvaluatorException($"Unknown function '{node.Name}'",
                                          node.Position);
 

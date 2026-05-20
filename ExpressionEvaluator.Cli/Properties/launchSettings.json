@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ExpressionEvaluator.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "filter --file files/products.csv --where \"cena < 100 AND sklad > 0\" --show-rows\r\n",
+      "workingDirectory": "C:\\Users\\adric\\source\\repos\\ExpressionEvaluator\\ExpressionEvaluator.Cli\\bin\\Debug\\net10.0"
+    }
+  }
+}

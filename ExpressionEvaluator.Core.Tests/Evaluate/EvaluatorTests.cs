@@ -1,9 +1,6 @@
 ﻿using ExpressionEvaluator.Core.Evaluating;
 using ExpressionEvaluator.Core.Lexing;
 using ExpressionEvaluator.Core.Parsing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ExpressionEvaluator.Core.Tests.Evaluate;
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ExpressionEvaluator.Core.Evaluating;
+﻿namespace ExpressionEvaluator.Core.Evaluating;
 
 public abstract record Value
 {

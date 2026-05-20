@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ExpressionEvaluator.Core.Parsing.Ast;
+﻿namespace ExpressionEvaluator.Core.Parsing.Ast;
 
 public enum BinaryOperator
 {
@@ -15,7 +11,7 @@ public enum BinaryOperator
 
     Equal,
     NotEqual,
-    Less, 
+    Less,
     LessEqual,
     Greater,
     GreaterEqual,

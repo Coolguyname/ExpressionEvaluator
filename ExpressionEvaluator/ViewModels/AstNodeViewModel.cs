@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using ExpressionEvaluator.Core.Evaluating;
 using ExpressionEvaluator.Core.Parsing.Ast;
-using ExpressionEvaluator.Core.Evaluating;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ExpressionEvaluator.ViewModels;
 

@@ -2,7 +2,7 @@
 
 public sealed class ParserException : Exception
 {
-    public int Position { get;  }
+    public int Position { get; }
 
     public ParserException(string message, int position) : base(message)
     {
